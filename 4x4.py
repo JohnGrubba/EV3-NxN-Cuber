@@ -13,12 +13,13 @@ from move_cube import (
 from scan_cube import process_image
 from solver import solve_cube_from_string
 import cv2
+from sklearn.cluster import KMeans
 
 # Connect to EV3
 my_ev3 = ev3.EV3(protocol=ev3.USB)
 
 print(my_ev3.battery)
-chk_colors = True
+chk_colors = False
 
 # Motors and Sensors
 turntable = ev3.Motor(ev3.PORT_A, ev3_obj=my_ev3)
@@ -34,41 +35,56 @@ turntable_sensor = ev3.Color(ev3.PORT_4, ev3_obj=my_ev3)
 turntable.stop(brake=False)
 flipper.stop(brake=False)
 tower.stop(brake=False)
-# input("Hit Enter to set Motors")
+input("Hit Enter to set Motors")
 turntable.position = 0
 flipper.position = 0
 tower.position = 0
 
 
-def get_side_str() -> str:
+def get_side_colors() -> list:
     # Take photo of cube using opencv with webcam
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cap.release()
-    prcsd = process_image(frame)
+    prcsd = process_image(frame, 4, True)
     cv2.imwrite("./images/img.png", prcsd[0])
     return prcsd[1]
+
+
+def find_color_groups(colors):
+    kmeans = KMeans(n_clusters=6, random_state=42)
+    kmeans.fit(colors)
+    labels = kmeans.labels_
+    groups = [[] for _ in range(6)]
+    for i, label in enumerate(labels):
+        groups[label].append(i + 1)
+    output = []
+    for color in colors:
+        for i, group in enumerate(groups):
+            if colors.index(color) + 1 in group:
+                output.append(str(i + 1))
+    return output
 
 
 def scan_cube():
     # Scan Cube
     # Top
-    up = get_side_str()
+    up = get_side_colors()
     if chk_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Front
-    front = get_side_str()
+    front = get_side_colors()
     if chk_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Down
-    down = get_side_str()
+    down = get_side_colors()
     if chk_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Back
-    back = get_side_str()[::-1]
+    back = get_side_colors()[::-1]
     if chk_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
@@ -79,7 +95,7 @@ def scan_cube():
     turn_cube(turntable, -1)
 
     # Left
-    left = get_side_str()
+    left = get_side_colors()
     if chk_colors:
         input("Press Enter to continue...")
     turn_cube(turntable, -1)
@@ -87,9 +103,20 @@ def scan_cube():
     flip_cube(flipper)
     turn_cube(turntable, 1)
     # Right
-    right = get_side_str()
+    right = get_side_colors()
 
-    cube_str = up + right + front + down + left + back
+    cube_list = up + right + front + down + left + back
+    # Find Color Groups
+    colors_numbers = "".join(find_color_groups(cube_list))
+    print(colors_numbers)
+    cube_str = (
+        colors_numbers.replace("1", "O")
+        .replace("2", "G")
+        .replace("3", "R")
+        .replace("4", "B")
+        .replace("5", "Y")
+        .replace("6", "W")
+    )
     print(cube_str)
     turn_cube(turntable, 2)
     flip_cube(flipper)
