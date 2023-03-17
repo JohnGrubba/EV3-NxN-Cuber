@@ -46,7 +46,7 @@ def get_side_str() -> str:
     ret, frame = cap.read()
     cap.release()
     prcsd = process_image(frame)
-    cv2.imwrite("img.png", prcsd[0])
+    cv2.imwrite("./images/img.png", prcsd[0])
     return prcsd[1]
 
 
@@ -126,11 +126,9 @@ if __name__ == "__main__":
     # Reset the Turntable
     # Other things have to be manually reset for now
     # reset(turntable, turntable_sensor)
-    cube = scan_cube()
+    scanned = scan_cube()
     # URFDLB
-    solution = solve_cube_from_string(
-        "BWOBGGROBOWBGWBOYYYWOWOBYGBBRGGWRGYBRGBWGBRRGGRYWRWBGOYOGWYYGYROWWWYBGYBOBROORYRRYROOYRWOWOWGBRY"
-    )
+    solution = solve_cube_from_string(scanned)
     # solution = ["Dw'", "Lw2", "R'", "U2"]
 
     cube = ["U", "R", "F", "D", "L", "B"]
