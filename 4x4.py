@@ -14,6 +14,7 @@ from scan_cube import process_image
 from solver import solve_cube_from_string
 import cv2
 from sklearn.cluster import KMeans
+from cube_corr import fix_colors
 
 # Connect to EV3
 my_ev3 = ev3.EV3(protocol=ev3.USB)
@@ -110,13 +111,15 @@ def scan_cube():
     colors_numbers = "".join(find_color_groups(cube_list))
     print(colors_numbers)
     cube_str = (
-        colors_numbers.replace("1", "O")
-        .replace("2", "G")
-        .replace("3", "R")
+        colors_numbers.replace("1", "F")
+        .replace("2", "D")
+        .replace("3", "L")
         .replace("4", "B")
-        .replace("5", "Y")
-        .replace("6", "W")
+        .replace("5", "R")
+        .replace("6", "U")
     )
+    print(cube_str)
+    cube_str = fix_colors(cube_str)
     print(cube_str)
     turn_cube(turntable, 2)
     flip_cube(flipper)

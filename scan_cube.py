@@ -1,30 +1,14 @@
 import cv2
 import numpy as np
-import math
-from itertools import combinations
-
-# Read Locations
-with open("coords.txt", "r") as f:
-    coords = f.read().splitlines()
-    coords = [tuple([int(i) for i in x.split(",")]) for x in coords]
 
 colors = {
     "R": [(0, 0, 140), (80, 80, 255)],
     "G": [(0, 80, 0), (120, 240, 120)],
-    "B": [(70, 0, 0), (255, 120, 120)],
+    "B": [(50, 0, 0), (255, 150, 150)],
     "Y": [(0, 50, 50), (80, 255, 255)],
     "O": [(0, 60, 170), (140, 140, 255)],
     "W": [(80, 70, 70), (250, 250, 250)],
 }
-
-
-def closest(color, colors):
-    # Get the color name and value of the closest color
-    color_name = min(
-        colors,
-        key=lambda x: math.sqrt(sum((a - b) ** 2 for a, b in zip(color, colors[x][0]))),
-    )
-    return color_name
 
 
 def get_squares(image, color, debug_mode=False):
@@ -125,6 +109,7 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cap.release()
+    cv2.imwrite("./images/cube.png", frame)
     prcsd = process_image(frame, 4, True)
     cv2.imwrite("./images/img.png", prcsd[0])
     print(prcsd[1])

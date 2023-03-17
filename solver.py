@@ -3,12 +3,18 @@ from rubikscubennnsolver.RubiksCube555 import RubiksCube555
 import logging
 from math import sqrt
 
+
 def solve_cube_from_string(inp_str: str, order: str = "URFDLB"):
-    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(filename)25s:%(lineno)d %(levelname)8s: %(message)s")
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s %(filename)25s:%(lineno)d %(levelname)8s: %(message)s",
+    )
 
     # Replace colors with readable letters by our solver
-    inp_str = inp_str.replace("G", "F").replace("Y", "D").replace("O", "L").replace("W", "U")
-    
+    inp_str = (
+        inp_str.replace("G", "F").replace("Y", "D").replace("O", "L").replace("W", "U")
+    )
+
     # Get Size of cube
     size = int(sqrt((len(inp_str) / 6)))
 
@@ -32,3 +38,9 @@ def solve_cube_from_string(inp_str: str, order: str = "URFDLB"):
     print(len(solution))
     print(solution)
     return solution
+
+
+if __name__ == "__main__":
+    solve_cube_from_string(
+        "URBBDULDUDBRBDLRDBRDRBLDLUBFFLULDBFFBLDURRFDRLLLUDUDURUFRDFBFUUURFFRRFFLBBRDUUBBLRFFBULFDDRLBLFL"
+    )
