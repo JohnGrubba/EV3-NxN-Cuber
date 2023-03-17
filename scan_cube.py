@@ -9,12 +9,12 @@ with open("coords.txt", "r") as f:
     coords = [tuple([int(i) for i in x.split(",")]) for x in coords]
 
 colors = {
-    "R": [(0, 0, 100), (100, 100, 255)],
-    "G": [(0, 50, 0), (120, 240, 120)],
+    "R": [(0, 0, 150), (80, 80, 255)],
+    "G": [(0, 80, 0), (120, 240, 120)],
     "B": [(70, 0, 0), (255, 120, 120)],
     "Y": [(0, 120, 124), (120, 255, 255)],
-    "O": [(0, 50, 150), (140, 140, 255)],
-    "W": [(100, 100, 100), (250, 250, 250)],
+    "O": [(0, 60, 170), (140, 140, 255)],
+    "W": [(120, 120, 120), (250, 250, 250)],
 }
 
 
@@ -62,74 +62,43 @@ def process_image(image: cv2.Mat, cube_size: int):
         else:
             result = cv2.addWeighted(result, 1, img, 1, 0)
 
-    # Convert the result to grayscale
-    amongus = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+    # Copy Pasta
+    result = cv2.erode(result, np.ones((5, 5), np.uint8), iterations=2)
+    gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
+    blur = cv2.medianBlur(gray, 55)
+    sharpen_kernel = np.array([[-1, -1, -1], [-1, 9, -1], [-1, -1, -1]])
+    sharpen = cv2.filter2D(blur, -1, sharpen_kernel)
+    sharpen = cv2.erode(sharpen, np.ones((5, 5), np.uint8), iterations=4)
 
-    amongus = cv2.GaussianBlur(amongus, (25, 25), 5)
+    # Threshold and morph close
+    thresh = cv2.threshold(sharpen, 0, 255, cv2.THRESH_BINARY_INV)[1]
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 3))
+    close = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel, iterations=4)
+    close = cv2.bitwise_not(close)
+    # Find contours and filter using threshold area
+    cnts = cv2.findContours(close, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    cnts = cnts[0]
 
-    # Threshold the image
-    amongus = cv2.threshold(amongus, 0, 255, cv2.THRESH_BINARY)[1]
+    min_area = 20000
+    max_area = 200000
+    for c in cnts:
+        area = cv2.contourArea(c)
+        print(area)
+        if area > min_area and area < max_area:
+            x, y, w, h = cv2.boundingRect(c)
+            result = result[y : y + h, x : x + w]
+            # cv2.rectangle(result, (x, y), (x + w, y + h), (36, 255, 12), 2)
 
-    # Line Segment Detection
-    detector = cv2.createLineSegmentDetector(0, 0.3, 3)
-    lines = detector.detect(amongus)[0]
-
-    cv2.imwrite("./images/lines.png", amongus)
-
-    paralell_lines = []
-    min_len = 10000
-    max_len = 0
-    # Draw lines on the image
-    for line in lines:
-        x1, y1, x2, y2 = line[0]
-        x1, y1, x2, y2 = int(x1), int(y1), int(x2), int(y2)
-        length = math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2)
-        mini = min(x1, x2)
-        maxi = max(x1, x2)
-        if mini < maxi - 80:
-            if length > 150:
-                cv2.line(result, (x1, y1), (x2, y2), (0, 255, 255), 2)
-                paralell_lines.append((int(max(x1, x2)), int(y1)))
-                max_len = max(max_len, length)
-                min_len = min(min_len, length)
-    print(len(paralell_lines))
-    first_x = min(paralell_lines[0][0], paralell_lines[1][0])
-    second_x = max(paralell_lines[1][0], paralell_lines[0][0])
-
-    first_y = min(paralell_lines[0][1], paralell_lines[1][1])
-    second_y = max(paralell_lines[1][1], paralell_lines[0][1])
-
-    # Side Line
-    cv2.line(
-        result,
-        (first_x, first_y),
-        (second_x, second_y),
-        (0, 255, 255),
-        2,
-    )
-
-    diff_y = max(paralell_lines[0][1], paralell_lines[1][1]) - min(
-        paralell_lines[0][1], paralell_lines[1][1]
-    )
-    middl_len = (max_len + min_len) / 2
-    # Get Circles with colors. Use right Line as anchor
-    right_top = (first_x, paralell_lines[0][1])
-    for i in range(cube_size):
-        for j in range(cube_size):
-            x = (
-                right_top[0]
-                - int(i * (middl_len / cube_size))
-                - int((middl_len / cube_size) / 2)
-            )
-            y = (
-                right_top[1]
-                - int(j * (diff_y / cube_size))
-                - int((diff_y / cube_size) / 2)
-            )
-            print("Drawing Circle at: ", x, y)
-            cv2.circle(result, (x, y), 5, (0, 255, 0), -1)
-
-    return (result, "")
+    side_str = ""
+    for i in range(1, 5):
+        for j in range(1, 5):
+            width = result.shape[1]
+            height = result.shape[0]
+            x = int(width / 4 * i) - int(width / 8)
+            y = int(height / 4 * j) - int(height / 8)
+            side_str += closest(result[y, x], colors)
+            result = cv2.circle(result, (x, y), 5, (255, 255, 255), -1)
+    return (result, side_str)
 
 
 if __name__ == "__main__":
@@ -139,3 +108,4 @@ if __name__ == "__main__":
     cap.release()
     prcsd = process_image(frame, 4)
     cv2.imwrite("./images/img.png", prcsd[0])
+    print(prcsd[1])
