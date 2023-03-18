@@ -18,23 +18,23 @@ def turn_cube(turntable: ev3.Motor, n: int = 1, speed: int = 50):
     turntable.move_by(n * 630, speed=speed, brake=True).start(thread=False)
 
 
-def turn_side(turntable: ev3.Motor, n: int = 1, speed: int = 50, overturn: int = 230):
+def turn_side(turntable: ev3.Motor, n: int = 1, speed: int = 100, overturn: int = 230):
     turntable.move_by(n * 630 + overturn, speed=speed, brake=True).start(thread=False)
     turntable.move_by(-overturn, speed=speed, brake=True).start(thread=False)
 
 
 def turn_side_inverted(
-    turntable: ev3.Motor, n: int = -1, speed: int = 50, overturn: int = 230
+    turntable: ev3.Motor, n: int = -1, speed: int = 100, overturn: int = 230
 ):
     turntable.move_by(n * 630 - overturn, speed=speed, brake=True).start(thread=False)
     turntable.move_by(+overturn, speed=speed, brake=True).start(thread=False)
 
 
-def lower_cube(tower: ev3.Motor, speed: int = 25):
+def lower_cube(tower: ev3.Motor, speed: int = 50):
     tower.move_by(-110, speed=speed, brake=True).start(thread=False)
 
 
-def raise_cube(tower: ev3.Motor, speed: int = 25):
+def raise_cube(tower: ev3.Motor, speed: int = 50):
     tower.move_by(110, speed=speed, brake=True).start(thread=False)
 
 

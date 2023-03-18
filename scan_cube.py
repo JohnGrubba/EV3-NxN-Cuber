@@ -2,12 +2,12 @@ import cv2
 import numpy as np
 
 colors = {
-    "R": [(0, 0, 140), (80, 80, 255)],
+    "R": [(0, 0, 100), (80, 80, 255)],
     "G": [(0, 80, 0), (120, 240, 120)],
     "B": [(50, 0, 0), (255, 150, 150)],
-    "Y": [(0, 50, 50), (80, 255, 255)],
-    "O": [(0, 60, 170), (140, 140, 255)],
-    "W": [(80, 70, 70), (250, 250, 250)],
+    "Y": [(0, 130, 150), (130, 255, 255)],
+    "O": [(0, 50, 110), (100, 180, 255)],
+    "W": [(100, 100, 100), (250, 250, 250)],
 }
 
 
@@ -31,6 +31,8 @@ def get_squares(image, color, debug_mode=False):
 
 
 def process_image(image: cv2.Mat, cube_size: int, debug_mode: bool = False):
+    image = cv2.convertScaleAbs(image, alpha=1, beta=0)
+    cv2.imwrite("./images/cube.png", image)
     unprocessed_img = image.copy()
     normalizedImg = np.zeros((800, 800))
     image = cv2.normalize(image, normalizedImg, 0, 255, cv2.NORM_MINMAX)
@@ -67,7 +69,7 @@ def process_image(image: cv2.Mat, cube_size: int, debug_mode: bool = False):
     cnts = cnts[0]
 
     min_area = 40000
-    max_area = 60000
+    max_area = 65000
     res_colors = None
     for c in cnts:
         area = cv2.contourArea(c)
@@ -109,7 +111,6 @@ if __name__ == "__main__":
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cap.release()
-    cv2.imwrite("./images/cube.png", frame)
     prcsd = process_image(frame, 4, True)
     cv2.imwrite("./images/img.png", prcsd[0])
     print(prcsd[1])

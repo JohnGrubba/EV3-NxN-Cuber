@@ -2,3 +2,4 @@
 /cache
 *.png
 /lookup-tables
+test.py
