@@ -20,7 +20,7 @@ from cube_corr import fix_colors
 my_ev3 = ev3.EV3(protocol=ev3.USB)
 
 print(my_ev3.battery)
-chk_colors = False
+debug_colors = False
 
 # Motors and Sensors
 turntable = ev3.Motor(ev3.PORT_A, ev3_obj=my_ev3)
@@ -71,22 +71,22 @@ def scan_cube():
     # Scan Cube
     # Top
     up = get_side_colors()
-    if chk_colors:
+    if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Front
     front = get_side_colors()
-    if chk_colors:
+    if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Down
     down = get_side_colors()
-    if chk_colors:
+    if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Back
     back = get_side_colors()[::-1]
-    if chk_colors:
+    if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     flip_cube(flipper)
@@ -97,7 +97,7 @@ def scan_cube():
 
     # Left
     left = get_side_colors()
-    if chk_colors:
+    if debug_colors:
         input("Press Enter to continue...")
     turn_cube(turntable, -1)
     flip_cube(flipper)
@@ -157,10 +157,9 @@ if __name__ == "__main__":
     # Other things have to be manually reset for now
     # reset(turntable, turntable_sensor)
     scanned = scan_cube()
-    # URFDLB
     solution = solve_cube_from_string(scanned)
-    # solution = ["Dw'", "Lw2", "R'", "U2"]
 
+    # The cubes initial state
     cube = ["U", "R", "F", "D", "L", "B"]
     #        0    1    2    3    4    5
 
@@ -201,6 +200,7 @@ if __name__ == "__main__":
                 back_to_down()
             execute_move(move)
 
+    # Lock Motors
     turntable.stop(brake=True)
     flipper.stop(brake=True)
     tower.stop(brake=True)

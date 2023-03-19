@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 
+# Used for detecting the cube in an image (can be modified)
 colors = {
     "R": [(0, 0, 100), (80, 80, 255)],
     "G": [(0, 80, 0), (120, 240, 120)],
@@ -31,13 +32,15 @@ def get_squares(image, color, debug_mode=False):
 
 
 def process_image(image: cv2.Mat, cube_size: int, debug_mode: bool = False):
+    # Normalize some stuff
     image = cv2.convertScaleAbs(image, alpha=1, beta=0)
+    # Save Unprocessed Image for Debugging
     cv2.imwrite("./images/cube.png", image)
     unprocessed_img = image.copy()
     normalizedImg = np.zeros((800, 800))
     image = cv2.normalize(image, normalizedImg, 0, 255, cv2.NORM_MINMAX)
 
-    # COPIED STUFF
+    # Get the different color squares and overlay them
     imgs = []
     for color in colors.keys():
         imgs.append(get_squares(image, color, debug_mode))
@@ -50,8 +53,9 @@ def process_image(image: cv2.Mat, cube_size: int, debug_mode: bool = False):
         # Otherwise, add the current image to the result
         else:
             result = cv2.addWeighted(result, 1, img, 1, 0)
+    # Save the overlayed images
     cv2.imwrite("./images/all_merged.png", result)
-    # Copy Pasta
+    # Remove small parts in scan
     result = cv2.erode(result, np.ones((5, 5), np.uint8), iterations=3)
     gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
     blur = cv2.medianBlur(gray, 75)
@@ -68,6 +72,7 @@ def process_image(image: cv2.Mat, cube_size: int, debug_mode: bool = False):
     cnts = cv2.findContours(close, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     cnts = cnts[0]
 
+    # This is depending on the cameras resolution
     min_area = 40000
     max_area = 65000
     res_colors = None
@@ -75,6 +80,7 @@ def process_image(image: cv2.Mat, cube_size: int, debug_mode: bool = False):
         area = cv2.contourArea(c)
         print(area)
         if area > min_area and area < max_area:
+            # This should only happen once
             x, y, w, h = cv2.boundingRect(c)
             result = unprocessed_img[y : y + h, x : x + w]
             res_colors = result.copy()
@@ -85,6 +91,7 @@ def process_image(image: cv2.Mat, cube_size: int, debug_mode: bool = False):
     idx = 0
     for i in range(1, cube_size + 1):
         for j in range(1, cube_size + 1):
+            # Get the color codes for every piece
             width = result.shape[1]
             height = result.shape[0]
             x = int(width / 4 * j) - int(width / 8)

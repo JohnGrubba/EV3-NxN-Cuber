@@ -31,6 +31,7 @@ def solve_cube_from_string(inp_str: str, order: str = "URFDLB"):
             order,
             None,
         )
+    # Output the current cube
     cube.print_cube("Initial Cube")
     cube.sanity_check()
     cube.solve([])

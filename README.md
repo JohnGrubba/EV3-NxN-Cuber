@@ -2,9 +2,7 @@
 
 This Rubik's cube Solver is currently capable of solving the following cubes:
 
-- 3x3
 - 4x4
-- 5x5
 
 Larger Cubes are technically possible but will not be implemented that quickly.<br>
 For the Machine to work properly you will need one 3D Printed Part.
