@@ -22,5 +22,11 @@ Huge thanks to dwalton76 for providing his very efficient <a href="https://githu
 ## Preparation
 
 - Flash Raspberry Pi OS Lite
-- ![image](https://github.com/JohnGrubba/EV3-NxN-Cuber/assets/63007476/90b90f96-c6ed-4c61-96c8-0f0a16919649)
-- ![image](https://github.com/JohnGrubba/EV3-NxN-Cuber/assets/63007476/472d5559-bda6-4ab7-ac01-c3f6f472740d)
+
+![image](https://github.com/JohnGrubba/EV3-NxN-Cuber/assets/63007476/90b90f96-c6ed-4c61-96c8-0f0a16919649)
+![image](https://github.com/JohnGrubba/EV3-NxN-Cuber/assets/63007476/472d5559-bda6-4ab7-ac01-c3f6f472740d)
+
+- Clone this repository
+```sh
+git clone https://github.com/JohnGrubba/EV3-NxN-Cuber
+```
