@@ -16,3 +16,11 @@ Download it right here: <a href="https://www.tinkercad.com/things/d0IxvU92B2h?sh
 ## Solving the Cube
 
 Huge thanks to dwalton76 for providing his very efficient <a href="https://github.com/dwalton76/rubiks-cube-NxNxN-solver">NxN Solver.</a>
+
+# Setup
+
+## Preparation
+
+- Flash Raspberry Pi OS Lite
+- ![image](https://github.com/JohnGrubba/EV3-NxN-Cuber/assets/63007476/90b90f96-c6ed-4c61-96c8-0f0a16919649)
+- ![image](https://github.com/JohnGrubba/EV3-NxN-Cuber/assets/63007476/472d5559-bda6-4ab7-ac01-c3f6f472740d)
