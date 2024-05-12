@@ -30,3 +30,21 @@ Huge thanks to dwalton76 for providing his very efficient <a href="https://githu
 ```sh
 git clone https://github.com/JohnGrubba/EV3-NxN-Cuber
 ```
+
+- Install all Dependencies
+- Make sure you are on root
+```sh
+sudo pip install -r requirements.txt
+```
+
+- Fix OpenCV Error (Import Error)
+```
+sudo apt install libgl1
+```
+
+- Fix Permissions Error (Run with sudo)
+To allow Python access to the USB Connection you need to run the program with sudo. And this is why you should also install all dependencies with sudo
+```
+sudo python3 4x4.py
+sudo python3 5x5.py
+```

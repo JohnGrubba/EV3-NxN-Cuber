@@ -137,12 +137,12 @@ def execute_move(move: str):
     grab_cube(flipper)
     if "2" in move:
         # Grab the cube before turning
-        turn_side(turntable, 2)
+        turn_side(turntable, 4, 2)
     else:
         if "'" in move:
-            turn_side_inverted(turntable, -1)
+            turn_side_inverted(turntable, 4, -1)
         else:
-            turn_side(turntable, 1)
+            turn_side(turntable, 4, 1)
 
     # Release Cube
     release_cube(flipper)
