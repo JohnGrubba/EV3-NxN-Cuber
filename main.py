@@ -52,7 +52,7 @@ def get_side_colors(file_ext:str = "") -> list:
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cap.release()
-    prcsd = process_image(frame, CUBE_SIZE, True)
+    prcsd = process_image(frame, CUBE_SIZE)
     cv2.imwrite(f"./images/img{file_ext}.png", prcsd[0])
     return prcsd[1]
 
