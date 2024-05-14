@@ -16,6 +16,8 @@ import cv2
 from sklearn.cluster import KMeans
 from cube_corr import fix_colors
 
+CUBE_SIZE = 5
+
 # Connect to EV3
 my_ev3 = ev3.EV3(protocol=ev3.USB)
 
@@ -33,6 +35,7 @@ turntable_sensor = ev3.Color(ev3.PORT_4, ev3_obj=my_ev3)
 #    continue
 
 # Don't make those mfs lock position
+# reset(turntable, turntable_sensor)
 turntable.stop(brake=False)
 flipper.stop(brake=False)
 tower.stop(brake=False)
@@ -47,7 +50,7 @@ def get_side_colors() -> list:
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cap.release()
-    prcsd = process_image(frame, 4, True)
+    prcsd = process_image(frame, CUBE_SIZE, True)
     cv2.imwrite("./images/img.png", prcsd[0])
     return prcsd[1]
 
@@ -137,12 +140,12 @@ def execute_move(move: str):
     grab_cube(flipper)
     if "2" in move:
         # Grab the cube before turning
-        turn_side(turntable, 4, 2)
+        turn_side(turntable, CUBE_SIZE, 2)
     else:
         if "'" in move:
-            turn_side_inverted(turntable, 4, -1)
+            turn_side_inverted(turntable, CUBE_SIZE, -1)
         else:
-            turn_side(turntable, 4, 1)
+            turn_side(turntable, CUBE_SIZE, 1)
 
     # Release Cube
     release_cube(flipper)
