@@ -1,20 +1,20 @@
 import ev3_dc as ev3
 
 
-def flip_cube(flipper: ev3.Motor, speed: int = 25):
+def flip_cube(flipper: ev3.Motor, speed: int = 30):
     flipper.move_by(500, speed=speed, brake=True).start().join()
     flipper.move_by(-140, speed=speed, brake=True).start().join()
 
 
-def grab_cube(flipper: ev3.Motor, speed: int = 25):
+def grab_cube(flipper: ev3.Motor, speed: int = 30):
     flipper.move_by(140, speed=speed, brake=True).start().join()
 
 
-def release_cube(flipper: ev3.Motor, speed: int = 25):
+def release_cube(flipper: ev3.Motor, speed: int = 30):
     flipper.move_by(-140, speed=speed, brake=True).start().join()
 
 
-def turn_cube(turntable: ev3.Motor, n: int = 1, speed: int = 50):
+def turn_cube(turntable: ev3.Motor, n: int = 1, speed: int = 100):
     turntable.move_by(n * 630, speed=speed, brake=True).start().join()
 
 
@@ -36,11 +36,11 @@ def turn_side_inverted(
     turntable.move_by(overturn_values[cube_size], speed=speed, brake=True).start().join()
 
 
-def lower_cube(tower: ev3.Motor, speed: int = 50):
+def lower_cube(tower: ev3.Motor, speed: int = 100):
     tower.move_by(-110, speed=speed, brake=True).start().join()
 
 
-def raise_cube(tower: ev3.Motor, speed: int = 50):
+def raise_cube(tower: ev3.Motor, speed: int = 100):
     tower.move_by(110, speed=speed, brake=True).start().join()
 
 
