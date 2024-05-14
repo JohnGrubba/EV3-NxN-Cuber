@@ -9,6 +9,8 @@ from move_cube import (
     lower_cube,
     raise_cube,
     turn_side_inverted,
+    flip_and_grab,
+    flip2_and_grab
 )
 from scan_cube import process_image
 from solver import solve_cube_from_string
@@ -16,7 +18,7 @@ import cv2
 from sklearn.cluster import KMeans
 from cube_corr import fix_colors
 
-CUBE_SIZE = 5
+CUBE_SIZE = 4
 
 # Connect to EV3
 my_ev3 = ev3.EV3(protocol=ev3.USB)
@@ -45,13 +47,13 @@ flipper.position = 0
 tower.position = 0
 
 
-def get_side_colors() -> list:
+def get_side_colors(file_ext:str = "") -> list:
     # Take photo of cube using opencv with webcam
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
     cap.release()
     prcsd = process_image(frame, CUBE_SIZE, True)
-    cv2.imwrite("./images/img.png", prcsd[0])
+    cv2.imwrite(f"./images/img{file_ext}.png", prcsd[0])
     return prcsd[1]
 
 
@@ -73,22 +75,22 @@ def find_color_groups(colors):
 def scan_cube():
     # Scan Cube
     # Top
-    up = get_side_colors()
+    up = get_side_colors("up")
     if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Front
-    front = get_side_colors()
+    front = get_side_colors("front")
     if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Down
-    down = get_side_colors()
+    down = get_side_colors("down")
     if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
     # Back
-    back = get_side_colors()[::-1]
+    back = get_side_colors("back")[::-1]
     if debug_colors:
         input("Press Enter to continue...")
     flip_cube(flipper)
@@ -99,7 +101,7 @@ def scan_cube():
     turn_cube(turntable, -1)
 
     # Left
-    left = get_side_colors()
+    left = get_side_colors("left")
     if debug_colors:
         input("Press Enter to continue...")
     turn_cube(turntable, -1)
@@ -107,7 +109,7 @@ def scan_cube():
     flip_cube(flipper)
     turn_cube(turntable, 1)
     # Right
-    right = get_side_colors()
+    right = get_side_colors("right")
 
     cube_list = up + right + front + down + left + back
     # Find Color Groups
@@ -124,9 +126,6 @@ def scan_cube():
     print(cube_str)
     cube_str = fix_colors(cube_str)
     print(cube_str)
-    turn_cube(turntable, 2)
-    flip_cube(flipper)
-    turn_cube(turntable, -1)
     return cube_str
 
 
@@ -136,8 +135,6 @@ def execute_move(move: str):
     # Should we lower the cube?
     if "w" in move:
         lower_cube(tower)
-    # Grab Cube
-    grab_cube(flipper)
     if "2" in move:
         # Grab the cube before turning
         turn_side(turntable, CUBE_SIZE, 2)
@@ -162,20 +159,28 @@ if __name__ == "__main__":
     scanned = scan_cube()
     solution = solve_cube_from_string(scanned)
 
+    # Reset Cube to original Position
+    turn_cube(turntable, 2)
+    flip_cube(flipper)
+    turn_cube(turntable, -1)
+
     # The cubes initial state
     cube = ["U", "R", "F", "D", "L", "B"]
     #        0    1    2    3    4    5
 
-    def back_to_down():
-        up, back, down, front = cube[0], cube[5], cube[3], cube[2]
-        cube[5], cube[3], cube[2], cube[0] = up, back, down, front
-        flip_cube(flipper)
+    def back_to_down(iterations: int = 1):
+        for _ in range(iterations):
+            up, back, down, front = cube[0], cube[5], cube[3], cube[2]
+            cube[5], cube[3], cube[2], cube[0] = up, back, down, front
+        if iterations == 2: flip2_and_grab(flipper)
+        if iterations == 1: flip_and_grab(flipper)
 
     def solve_turn_cube(n=1):
-        if n == 1:
-            left, front, back, right = cube[4], cube[2], cube[5], cube[1]
-            cube[1], cube[5], cube[4], cube[2] = front, right, back, left
-            turn_cube(turntable, 1)
+        if n >= 1:
+            for _ in range(n):
+                left, front, back, right = cube[4], cube[2], cube[5], cube[1]
+                cube[1], cube[5], cube[4], cube[2] = front, right, back, left
+            turn_cube(turntable, n)
         elif n == -1:
             left, front, back, right = cube[4], cube[2], cube[5], cube[1]
             cube[1], cube[5], cube[4], cube[2] = back, left, front, right
@@ -186,21 +191,23 @@ if __name__ == "__main__":
         print(move)
         if cube[3] in move:
             print("I can directly do this move")
+            grab_cube(flipper)
             execute_move(move)
         else:
             # We still have to position the cube correctly
             wanted_side = move[0]
             print(f"We have {cube[3]} at the bottom and want to side {wanted_side}")
             if cube[0] == wanted_side:
-                back_to_down(), back_to_down()
+                back_to_down(2)
             if cube[1] == wanted_side:
                 solve_turn_cube(), back_to_down()
             if cube[2] == wanted_side:
-                solve_turn_cube(), solve_turn_cube(), back_to_down()
+                solve_turn_cube(2), back_to_down()
             if cube[4] == wanted_side:
                 solve_turn_cube(-1), back_to_down()
             if cube[5] == wanted_side:
                 back_to_down()
+            # CUBE IS ALREADY GRABBED
             execute_move(move)
 
     # Lock Motors

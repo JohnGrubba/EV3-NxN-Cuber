@@ -1,7 +1,8 @@
 import ev3_dc as ev3
 
+OVERTURN_VALUES = {4: 240, 5: 220, 3: 340, 2: 350}
 
-def flip_cube(flipper: ev3.Motor, speed: int = 30):
+def flip_cube(flipper: ev3.Motor, speed: int = 25):
     flipper.move_by(500, speed=speed, brake=True).start().join()
     flipper.move_by(-140, speed=speed, brake=True).start().join()
 
@@ -17,23 +18,27 @@ def release_cube(flipper: ev3.Motor, speed: int = 30):
 def turn_cube(turntable: ev3.Motor, n: int = 1, speed: int = 100):
     turntable.move_by(n * 630, speed=speed, brake=True).start().join()
 
+def flip_and_grab(flipper: ev3.Motor, speed: int = 30):
+    flipper.move_by(500, speed=speed, brake=True).start().join()
+
+def flip2_and_grab(flipper: ev3.Motor, speed:int = 30):
+    flipper.move_by(860, speed=speed, brake=True).start().join()
 
 def turn_side(turntable: ev3.Motor, cube_size: int, n: int = 1, speed: int = 100):
-    overturn_values = {4: 240, 5: 220, 3: 340}
-    if not overturn_values.get(cube_size):
+    
+    if not OVERTURN_VALUES.get(cube_size):
         raise Exception("Unsupported Cube Size in turn side function")
-    turntable.move_by(n * 630 + overturn_values[cube_size], speed=speed, brake=True).start().join()
-    turntable.move_by(-overturn_values[cube_size], speed=speed, brake=True).start().join()
+    turntable.move_by(n * 630 + OVERTURN_VALUES[cube_size], speed=speed, brake=True).start().join()
+    turntable.move_by(-OVERTURN_VALUES[cube_size], speed=speed, brake=True).start().join()
 
 
 def turn_side_inverted(
     turntable: ev3.Motor, cube_size: int, n: int = -1, speed: int = 100
 ):
-    overturn_values = {4: 240, 5: 220, 3: 340}
-    if not overturn_values.get(cube_size):
+    if not OVERTURN_VALUES.get(cube_size):
         raise Exception("Unsupported Cube Size in turn side function")
-    turntable.move_by(n * 630 - overturn_values[cube_size], speed=speed, brake=True).start().join()
-    turntable.move_by(overturn_values[cube_size], speed=speed, brake=True).start().join()
+    turntable.move_by(n * 630 - OVERTURN_VALUES[cube_size], speed=speed, brake=True).start().join()
+    turntable.move_by(OVERTURN_VALUES[cube_size], speed=speed, brake=True).start().join()
 
 
 def lower_cube(tower: ev3.Motor, speed: int = 100):
@@ -74,8 +79,9 @@ if __name__ == "__main__":
     flipper.position = 0
     tower.position = 0
 
-
     # reset(turntable, turntable_sensor)
-    grab_cube(flipper)
-    turn_side(turntable, 5, 4)
-    release_cube(flipper)
+    flip_cube(flipper)
+
+    turntable.stop(brake=False)
+    flipper.stop(brake=False)
+    tower.stop(brake=False)

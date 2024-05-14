@@ -1,0 +1,13 @@
+5x5 -----------------
+
+14.05.2024 - 1
+- Scanning: 29.48 sek
+- Calculating: 1:30 min
+- Solving: 6:22 min
+
+14.05.2024 - 2
+- Scanning: 32.21 sek
+- Calculating: 1:11 min
+- Solving: 6:05 min
+
+4x4 -----------------

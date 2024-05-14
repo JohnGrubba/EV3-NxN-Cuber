@@ -1,3 +1,5 @@
+from rubikscubennnsolver.RubiksCube222 import RubiksCube222
+from rubikscubennnsolver.RubiksCube333 import RubiksCube333
 from rubikscubennnsolver.RubiksCube444 import RubiksCube444
 from rubikscubennnsolver.RubiksCube555 import RubiksCube555
 import logging
@@ -19,6 +21,18 @@ def solve_cube_from_string(inp_str: str, order: str = "URFDLB"):
     size = int(sqrt((len(inp_str) / 6)))
 
     # Currently Implemented Cubes
+    if size == 2:
+        cube = RubiksCube222(
+            inp_str,
+            order,
+            None
+        )
+    if size == 3:
+        cube = RubiksCube333(
+            inp_str,
+            order,
+            None
+        )
     if size == 4:
         cube = RubiksCube444(
             inp_str,
@@ -43,5 +57,5 @@ def solve_cube_from_string(inp_str: str, order: str = "URFDLB"):
 
 if __name__ == "__main__":
     solve_cube_from_string(
-        "UFRURFDRUDFUULLDRLULLBLDLRBDDRFBLBRLLDUUDRFBDFBBFBULLUDFRRBBFDRDRUFRDFBDULUBUDRRBDUFFLUFBLRBFFLB"
+        "UUURRRUUUULUUDRLRUULRULFFURDDFDFLLRLFLRUBFFRURBUUUFRRD"
     )
