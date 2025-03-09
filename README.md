@@ -4,7 +4,7 @@ This Rubik's cube Solver is currently capable of solving the following cubes:
 
 - 4x4
 
-Larger Cubes are technically possible but will not be implemented that quickly.<br>
+Larger Cubes are possible, but still need improvement.<br>
 For the Machine to work properly you will need one 3D Printed Part.
 
 Download it right here: <a href="https://www.tinkercad.com/things/d0IxvU92B2h?sharecode=Jh8IfUun2b3GN0zdoSJT3zGORd8c5wm-otYE1JK7ZZI">EV3 Cube Holder</a> 
@@ -45,6 +45,6 @@ sudo apt install libgl1
 - Fix Permissions Error (Run with sudo)
 To allow Python access to the USB Connection you need to run the program with sudo. And this is why you should also install all dependencies with sudo
 ```
-sudo python3 4x4.py
-sudo python3 5x5.py
+sudo python3 main.py
 ```
+You can change the cube size in the main.py file via the Constant at the top. This will eventually be changed to a command line arg.
